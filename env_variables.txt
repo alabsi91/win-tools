@@ -1,9 +1,0 @@
-# ANDROID_HOME=F:\Android\Sdk
-# ANDROID_AVD_HOME=F:\Android\Avd
-# ANDROID_USER_HOME=F:\Android\.android
-# GRADLE_USER_HOME=F:\.gradle
-# F:\Android\Sdk\platform-tools
-# F:\Android\Sdk\emulator
-TEST=hello
-TEST_SECOND=hi
-F:\Android\Sdk\emulatoooor
