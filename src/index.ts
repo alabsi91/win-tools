@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 
+import select from '@inquirer/select';
+import chalk from 'chalk';
 import gradient from 'gradient-string';
 import { z } from 'zod';
 
+import { Log } from '@cli/logger.js';
 import { CONSTANTS, testCliArgsInput } from '@cli/terminal.js';
 import Schema from '@schema';
 
 // commands
+import autoLogon from '@commands/auto-logon.js';
 import chocoBackup from '@commands/choco-backup.js';
 import chocoRestore from '@commands/choco-restore.js';
 import disableWin10Context from '@commands/disable-win10-context.js';
 import enableLongPath from '@commands/enable-long-path.js';
 import enableWin10Context from '@commands/enable-win10-context.js';
 import setEnvironmentVariables from '@commands/set-environment-variables.js';
-import autoLogon from '@commands/auto-logon.js';
 
 const coolGradient = gradient([
   { color: '#FA8BFF', pos: 0 },
@@ -35,7 +38,7 @@ console.log(
 
 // Here you can test your CLI arguments while using hot reload in development mode.
 if (CONSTANTS.isDev) {
-  testCliArgsInput('-h');
+  testCliArgsInput('');
 }
 
 async function main() {
@@ -75,7 +78,33 @@ async function main() {
 
   // When no command is given, you will get the global options.
   if (!command) {
-    Schema.printHelp();
+    const { help } = results.data;
+
+    if (help) {
+      Schema.printHelp();
+      return;
+    }
+
+    Log.warn(
+      'No command is given. Please select a command from the list to get help.',
+      '\nOr run',
+      chalk.cyan('`win-tools --help`'),
+      'to see the full help message.\n',
+    );
+
+    const choices = results.schemas
+      .filter(e => e.command)
+      .map(e => ({ name: e.command, value: e.command!, description: '\n' + (e.command ? e.description : '') }));
+
+    const answer = await select({
+      message: 'Select a command to get help',
+      choices,
+      pageSize: results.schemas.length,
+    });
+
+    console.log('');
+    Schema.printHelp({ includeCommands: [answer], includeDescription: false, includeUsage: false, includeGlobalOptions: false });
+
     return;
   }
 
