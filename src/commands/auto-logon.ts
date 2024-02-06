@@ -42,16 +42,15 @@ export default async function autoLogon({ username, domain, autoLogonCount, remo
 
   try {
     await cmdPassThrough`${scriptPath} ${scriptOptions} ${{ shell }}`;
-    Log.success('Enabled auto logon.');
+    Log.success('\nEnabled auto logon.\n');
   } catch (error) {
-    Log.error('Failed to enable auto logon.');
-    console.log(error);
+    Log.error('\nFailed to enable auto logon.\n');
   }
 }
 
 autoLogon.schema = Schema.createCommand({
   command: 'auto-logon',
-  description: 'Enable auto logon.',
+  description: 'Enables auto logon using the specified username and password.',
   aliases: ['autologon', 'enable-autologon', 'enableautologon'],
   options: [
     {
