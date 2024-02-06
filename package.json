@@ -25,6 +25,7 @@
     "prepare": "npm run build:js"
   },
   "dependencies": {
+    "@inquirer/checkbox": "^2.0.0",
     "@inquirer/confirm": "^3.0.0",
     "@inquirer/input": "^2.0.0",
     "@inquirer/password": "^2.0.0",

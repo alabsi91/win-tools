@@ -49,9 +49,9 @@ export default async function chocoBackup(savePath?: string, overwrite?: boolean
 }
 
 chocoBackup.schema = Schema.createCommand({
-  command: 'backup',
+  command: 'choco-backup',
   description: 'Backup all installed choco packages to a text file.',
-  aliases: ['backup-packages', 'choco-backup'],
+  aliases: ['backup-packages'],
   argsType: z.string().array().length(0),
   options: [
     {

@@ -16,7 +16,11 @@ import chocoRestore from '@commands/choco-restore.js';
 import disableWin10Context from '@commands/disable-win10-context.js';
 import enableLongPath from '@commands/enable-long-path.js';
 import enableWin10Context from '@commands/enable-win10-context.js';
+import runScripts from '@commands/run-scripts.js';
 import setEnvironmentVariables from '@commands/set-environment-variables.js';
+import uninstallBloat from '@commands/uninstall-bloat.js';
+import disableAppSuggestions from '@commands/disable-app-suggestions.js';
+import disableFirewall from '@commands/disable-firewall.js';
 
 const coolGradient = gradient([
   { color: '#FA8BFF', pos: 0 },
@@ -64,6 +68,10 @@ async function main() {
     enableLongPath.schema,
     setEnvironmentVariables.schema,
     autoLogon.schema,
+    runScripts.schema,
+    uninstallBloat.schema,
+    disableAppSuggestions.schema,
+    disableFirewall.schema,
     options,
   );
 
@@ -108,11 +116,11 @@ async function main() {
     return;
   }
 
-  if (command === 'backup') {
+  if (command === 'choco-backup') {
     const { path, overwrite, help } = results.data;
 
     if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['backup'], includeGlobalOptions: false });
+      Schema.printHelp<typeof results>({ includeCommands: ['choco-backup'], includeGlobalOptions: false });
       return;
     }
 
@@ -120,11 +128,11 @@ async function main() {
     return;
   }
 
-  if (command === 'restore') {
+  if (command === 'choco-restore') {
     const { path, help } = results.data;
 
     if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['restore'], includeGlobalOptions: false });
+      Schema.printHelp<typeof results>({ includeCommands: ['choco-restore'], includeGlobalOptions: false });
       return;
     }
 
@@ -189,6 +197,54 @@ async function main() {
     }
 
     await autoLogon({ username, domain, autoLogonCount, removeLegalPrompt, backupFile });
+    return;
+  }
+
+  if (command === 'run-scripts') {
+    const { path, exitOnError, help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['run-scripts'], includeGlobalOptions: false });
+      return;
+    }
+
+    await runScripts(path, exitOnError);
+    return;
+  }
+
+  if (command === 'uninstall-bloat') {
+    const { help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['uninstall-bloat'], includeGlobalOptions: false });
+      return;
+    }
+
+    await uninstallBloat();
+    return;
+  }
+
+  if (command === 'disable-suggestions') {
+    const { help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['disable-suggestions'], includeGlobalOptions: false });
+      return;
+    }
+
+    await disableAppSuggestions();
+    return;
+  }
+
+  if (command === 'disable-firewall') {
+    const { help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['disable-firewall'], includeGlobalOptions: false });
+      return;
+    }
+
+    await disableFirewall();
   }
 }
 

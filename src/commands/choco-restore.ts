@@ -23,14 +23,14 @@ export default async function chocoRestore(filePath: string | undefined) {
     await installChoco();
   }
 
-  filePath = filePath ?? (await input({ message: 'Enter the path of the backup text file :' }));
+  filePath = filePath ?? (await input({ message: 'Enter the path of the backup text file: ' }));
 
   loading.start('Reading backup text file...');
 
   // check if backup text file exits
   if (!existsSync(filePath)) {
     loading.error('Backup text file does not exist.');
-    return;
+    process.exit(1);
   }
 
   const packagesStr = await readFile(filePath, { encoding: 'utf-8' });
@@ -50,10 +50,10 @@ export default async function chocoRestore(filePath: string | undefined) {
 }
 
 chocoRestore.schema = Schema.createCommand({
-  command: 'restore',
+  command: 'choco-restore',
   description: `Restore all installed choco packages from a text file\nthat contains packages names ${chalk.yellow('(one per line)')}.`,
   example: `chrome-remote-desktop-chrome\nfirefox\n${chalk.white.dim.italic('# This is a comment')}\nspotify`,
-  aliases: ['restore-packages', 'choco-restore', 'install'],
+  aliases: ['restore-packages', 'install'],
   options: [
     {
       name: 'path',

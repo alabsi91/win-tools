@@ -41,9 +41,8 @@ export async function installChoco() {
   if (!isPolicySet) {
     Log.error('\nPowerShell execution policy is not set, permission denied.\n');
     Log.info(
-      'Please run the following command in an evaluated PowerShell session first:\n',
-      '              ',
-      chalk.green('"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
+      'Please run the following command in an evaluated PowerShell session first:',
+      chalk.green('\n"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
     );
     process.exit(1);
   }
@@ -65,9 +64,8 @@ export async function installChocoPackage(packageName: string) {
   if (!isPolicySet) {
     Log.error('\nPowerShell execution policy is not set, permission denied.\n');
     Log.info(
-      'Please run the following command in an evaluated PowerShell session first:\n',
-      '              ',
-      chalk.green('"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
+      'Please run the following command in an evaluated PowerShell session first:',
+      chalk.green('\n"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
     );
     process.exit(1);
   }
@@ -84,4 +82,9 @@ export async function setEnvVariable({ key, value }: { key: string; value: strin
   }
 
   await $`[System.Environment]::SetEnvironmentVariable("${key}", "${value}", "${scope}") ${{ shell }}`;
+}
+
+export async function winRemovePackage(packageName: string) {
+  const shell = await getPowerShell();
+  await cmdPassThrough`Get-AppxPackage "${packageName}" | Remove-AppxPackage ${{ shell }}`;
 }
