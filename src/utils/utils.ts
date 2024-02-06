@@ -1,34 +1,7 @@
 import { Log } from '@cli/logger.js';
 import { $, cmdPassThrough } from '@cli/terminal.js';
 import chalk from 'chalk';
-import inquirer from 'inquirer';
 import path from 'path';
-
-export async function askForStringInput(message: string, defaultValue?: string) {
-  const { answer } = await inquirer.prompt<{ answer: string }>([
-    {
-      type: 'input',
-      name: 'answer',
-      default: defaultValue,
-      message,
-    },
-  ]);
-
-  return answer;
-}
-
-export async function askToConfirm(message: string, defaultValue?: boolean) {
-  const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-    {
-      type: 'confirm',
-      name: 'confirm',
-      default: defaultValue,
-      message,
-    },
-  ]);
-
-  return confirm;
-}
 
 let cashedShell: 'powershell.exe' | 'pwsh.exe' | null = null;
 export async function getPowerShell() {

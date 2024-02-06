@@ -1,3 +1,5 @@
+import confirm from '@inquirer/confirm';
+import input from '@inquirer/input';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
@@ -6,7 +8,7 @@ import { z } from 'zod';
 import { Log } from '@cli/logger.js';
 import { spinner } from '@cli/spinner.js';
 import Schema from '@schema';
-import { askForStringInput, askToConfirm, installChoco, installChocoPackage, isChocoInstalled } from '@utils/utils.js';
+import { installChoco, installChocoPackage, isChocoInstalled } from '@utils/utils.js';
 
 export default async function chocoRestore(filePath: string | undefined) {
   const loading = spinner('Checking if choco is installed...');
@@ -15,13 +17,13 @@ export default async function chocoRestore(filePath: string | undefined) {
   if (!isChoco) {
     loading.error('Choco is not installed. Please install it first.');
 
-    const confirmInstall = await askToConfirm('Do you want to install choco ?');
+    const confirmInstall = await confirm({ message: 'Do you want to install choco ?' });
     if (!confirmInstall) return;
 
     await installChoco();
   }
 
-  filePath = filePath ?? (await askForStringInput('Enter the path of the backup text file :'));
+  filePath = filePath ?? (await input({ message: 'Enter the path of the backup text file :' }));
 
   loading.start('Reading backup text file...');
 

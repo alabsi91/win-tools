@@ -1,3 +1,4 @@
+import input from '@inquirer/input';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
@@ -5,11 +6,11 @@ import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
 import { spinner } from '@cli/spinner.js';
-import { askForStringInput, setEnvVariable } from '@utils/utils.js';
 import Schema from '@schema';
+import { setEnvVariable } from '@utils/utils.js';
 
 export default async function setEnvironmentVariables(filePath: string | undefined, isScopeMachine: boolean = false) {
-  filePath = filePath ?? (await askForStringInput('Enter the path of the environment variables text file :'));
+  filePath = filePath ?? (await input({ message: 'Enter the path of the environment variables text file :' }));
 
   const loading = spinner('Reading text file...');
 

@@ -1,3 +1,5 @@
+import confirm from '@inquirer/confirm';
+import input from '@inquirer/input';
 import Schema from '@schema';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
@@ -6,7 +8,7 @@ import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
 import { spinner } from '@cli/spinner.js';
-import { askForStringInput, askToConfirm, getChocoInstalledPackages, installChoco, isChocoInstalled } from '@utils/utils.js';
+import { getChocoInstalledPackages, installChoco, isChocoInstalled } from '@utils/utils.js';
 
 export default async function chocoBackup(savePath?: string, overwrite?: boolean) {
   const loading = spinner('Checking if choco is installed...');
@@ -15,7 +17,7 @@ export default async function chocoBackup(savePath?: string, overwrite?: boolean
   if (!isChoco) {
     loading.error('Choco is not installed. Please install it first.');
 
-    const confirmInstall = await askToConfirm('Do you want to install choco ?');
+    const confirmInstall = await confirm({ message: 'Do you want to install choco ?' });
     if (!confirmInstall) return;
 
     await installChoco();
@@ -29,12 +31,12 @@ export default async function chocoBackup(savePath?: string, overwrite?: boolean
   loading.stop();
   Log.info(`Found "${chalk.yellow(packagesArr.length)}" packages.\n`);
 
-  const pathToSave = savePath ?? (await askForStringInput('Enter the path to save the backup text file :'));
+  const pathToSave = savePath ?? (await input({ message: 'Enter the path to save the backup text file :' }));
 
   // check if file exists
   if (existsSync(pathToSave)) {
-    const confirm = overwrite ?? (await askToConfirm('The file already exists. Do you want to overwrite it ?'));
-    if (!confirm) {
+    const isConfirm = overwrite ?? (await confirm({ message: 'The file already exists. Do you want to overwrite it ?' }));
+    if (!isConfirm) {
       Log.warn('\bFile already exists. Aborted.');
       return;
     }

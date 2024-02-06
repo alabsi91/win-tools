@@ -35,7 +35,7 @@ console.log(
 
 // Here you can test your CLI arguments while using hot reload in development mode.
 if (CONSTANTS.isDev) {
-  testCliArgsInput('autologon');
+  testCliArgsInput('-h');
 }
 
 async function main() {
