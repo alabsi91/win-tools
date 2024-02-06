@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import fs from 'fs/promises';
-import inquirer from 'inquirer';
+import input from '@inquirer/input';
+import select from '@inquirer/select';
 import path from 'path';
 
 const releasePath = path.join('installer', 'installer.exe');
@@ -13,20 +14,18 @@ const CHOICES = {
 
 const { version: currentVersion } = JSON.parse(await fs.readFile('package.json'));
 
-const { version, operationName } = await inquirer.prompt([
-  {
-    type: 'list',
-    name: 'operationName',
-    message: 'Choose an operation :',
-    choices: [CHOICES.CREATE, CHOICES.UPLOAD],
-  },
-  {
-    type: 'input',
-    name: 'version',
-    default: 'v' + currentVersion,
-    message: 'Enter the release tag: ',
-  },
-]);
+const version = await input({
+  message: 'Enter the release tag: ',
+  default: 'v' + currentVersion,
+});
+
+const operationName = await select({
+  message: 'Choose an operation :',
+  choices: [
+    { value: CHOICES.CREATE, name: CHOICES.CREATE },
+    { value: CHOICES.UPLOAD, name: CHOICES.UPLOAD },
+  ],
+});
 
 if (operationName === CHOICES.CREATE) {
   try {
