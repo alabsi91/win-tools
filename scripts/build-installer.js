@@ -8,7 +8,7 @@ import path from 'path';
 import { promisify } from 'util';
 
 import config from '../nsis.config.js';
-import { cmd_script, ps1_script, sh_script } from './launch-scripts.js';
+import { cmd_script, sh_script } from './launch-scripts.js';
 
 const cmd = promisify(exec);
 
