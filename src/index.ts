@@ -13,6 +13,7 @@ import disableWin10Context from '@commands/disable-win10-context.js';
 import enableLongPath from '@commands/enable-long-path.js';
 import enableWin10Context from '@commands/enable-win10-context.js';
 import setEnvironmentVariables from '@commands/set-environment-variables.js';
+import autoLogon from '@commands/auto-logon.js';
 
 const coolGradient = gradient([
   { color: '#FA8BFF', pos: 0 },
@@ -34,7 +35,7 @@ console.log(
 
 // Here you can test your CLI arguments while using hot reload in development mode.
 if (CONSTANTS.isDev) {
-  testCliArgsInput('-h');
+  testCliArgsInput('autologon');
 }
 
 async function main() {
@@ -59,6 +60,7 @@ async function main() {
     disableWin10Context.schema,
     enableLongPath.schema,
     setEnvironmentVariables.schema,
+    autoLogon.schema,
     options,
   );
 
@@ -146,6 +148,18 @@ async function main() {
     }
 
     await setEnvironmentVariables(path, machine);
+    return;
+  }
+
+  if (command === 'auto-logon') {
+    const { username, domain, autoLogonCount, removeLegalPrompt, backupFile, help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['auto-logon'], includeGlobalOptions: false });
+      return;
+    }
+
+    await autoLogon({ username, domain, autoLogonCount, removeLegalPrompt, backupFile });
   }
 }
 

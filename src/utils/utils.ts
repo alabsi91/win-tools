@@ -31,7 +31,7 @@ export async function askToConfirm(message: string, defaultValue?: boolean) {
 }
 
 let cashedShell: 'powershell.exe' | 'pwsh.exe' | null = null;
-async function getPowerShell() {
+export async function getPowerShell() {
   if (cashedShell) return cashedShell;
   try {
     await $`pwsh.exe -v`;
