@@ -78,7 +78,7 @@ Section "${AppName} ${AppVersion}" SecCli
   SetOutPath $INSTDIR
 
   ; ADD YOUR OWN FILES HERE...
-  File ${JsFile} "${AppName}.cmd" "${AppName}.ps1" "${AppName}"
+  File ${JsFile} "${AppName}.cmd" "${AppName}"
   ; {assetsFiles} don't remove this comment, used to inject included assets
 
   ; Write the installation path into the registry

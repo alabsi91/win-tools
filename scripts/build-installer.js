@@ -145,16 +145,6 @@ const {
     return;
   }
 
-  // * 📝 create .ps1 file
-  try {
-    progress = loading(`- Creating "${name}.ps1" file ...`);
-    await fs.writeFile(path.join(outFolder, `${name}.ps1`), ps1_script(outJsFile));
-    progress(`- "${name}.ps1" file created successfully!`);
-  } catch (error) {
-    progress('- Error while creating .ps1 file!', true);
-    return;
-  }
-
   // * 📝 create sh file
   try {
     progress = loading(`- Creating "${name}" file ...`);
