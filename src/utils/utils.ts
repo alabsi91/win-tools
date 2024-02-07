@@ -1,6 +1,7 @@
 import { Log } from '@cli/logger.js';
 import { $, cmdPassThrough } from '@cli/terminal.js';
 import chalk from 'chalk';
+import { copyFile, mkdir, readdir, stat } from 'fs/promises';
 import path from 'path';
 
 let cashedShell: 'powershell.exe' | 'pwsh.exe' | null = null;
@@ -87,4 +88,22 @@ export async function setEnvVariable({ key, value }: { key: string; value: strin
 export async function winRemovePackage(packageName: string) {
   const shell = await getPowerShell();
   await cmdPassThrough`Get-AppxPackage "${packageName}" | Remove-AppxPackage ${{ shell }}`;
+}
+
+export async function recursiveCopy(source: string, target: string) {
+  const sourceStats = await stat(source);
+
+  if (sourceStats.isDirectory()) {
+    await mkdir(target, { recursive: true });
+    const files = await readdir(source);
+
+    for (const file of files) {
+      const sourcePath = path.join(source, file);
+      const targetPath = path.join(target, file);
+
+      await recursiveCopy(sourcePath, targetPath);
+    }
+  } else if (sourceStats.isFile()) {
+    await copyFile(source, target);
+  }
 }

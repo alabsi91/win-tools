@@ -21,6 +21,8 @@ import setEnvironmentVariables from '@commands/set-environment-variables.js';
 import uninstallBloat from '@commands/uninstall-bloat.js';
 import disableAppSuggestions from '@commands/disable-app-suggestions.js';
 import disableFirewall from '@commands/disable-firewall.js';
+import backupFiles from '@commands/backup-files.js';
+import restoreFiles from '@commands/restore-files.js';
 
 const coolGradient = gradient([
   { color: '#FA8BFF', pos: 0 },
@@ -63,6 +65,8 @@ async function main() {
   const results = Schema.parse(
     chocoBackup.schema,
     chocoRestore.schema,
+    backupFiles.schema,
+    restoreFiles.schema,
     enableWin10Context.schema,
     disableWin10Context.schema,
     enableLongPath.schema,
@@ -137,6 +141,30 @@ async function main() {
     }
 
     await chocoRestore(path);
+    return;
+  }
+
+  if (command === 'backup-files') {
+    const { textPath, backupPath, help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['backup-files'], includeGlobalOptions: false });
+      return;
+    }
+
+    await backupFiles(textPath, backupPath);
+    return;
+  }
+
+  if (command === 'restore-files') {
+    const { textPath, backupPath, help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['restore-files'], includeGlobalOptions: false });
+      return;
+    }
+
+    await restoreFiles(textPath, backupPath);
     return;
   }
 
