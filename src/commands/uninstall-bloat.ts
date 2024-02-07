@@ -25,7 +25,7 @@ export default async function uninstallBloat() {
       const scriptPath = path.join(CONSTANTS.projectRoot, 'assets', 'uninstallOneDrive.ps1');
 
       try {
-        await cmdPassThrough`${scriptPath}${{ shell }}`;
+        await cmdPassThrough`& "${scriptPath}"${{ shell }}`;
       } catch (error) {
         Log.error(`Failed to uninstall ${packageName}.`);
       }

@@ -24,7 +24,7 @@ export default async function disableAppSuggestions() {
 
   Log.info('Disabling Application suggestions...');
   try {
-    await cmdPassThrough`${scriptPath}${{ shell }}`;
+    await cmdPassThrough`& "${scriptPath}"${{ shell }}`;
     Log.success('\nDisabled Application suggestions.');
   } catch (error) {
     Log.error('\nFailed to disable Application suggestions.');

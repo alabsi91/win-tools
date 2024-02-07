@@ -40,7 +40,7 @@ export default async function autoLogon({ username, domain, autoLogonCount, remo
   const scriptPath = path.join(CONSTANTS.projectRoot, 'assets', 'autologon.ps1');
 
   try {
-    await cmdPassThrough`${scriptPath} ${scriptOptions} ${{ shell }}`;
+    await cmdPassThrough`& "${scriptPath}" ${scriptOptions} ${{ shell }}`;
     Log.success('\nEnabled auto logon.\n');
   } catch (error) {
     Log.error('\nFailed to enable auto logon.\n');

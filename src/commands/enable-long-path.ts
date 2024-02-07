@@ -10,7 +10,7 @@ export default async function enableLongPath() {
   await sleep(1000);
 
   try {
-    await $`regedit.exe /s ${path.join(CONSTANTS.projectRoot, 'assets', 'enableLongPaths.reg')}`;
+    await $`regedit.exe /s "${path.join(CONSTANTS.projectRoot, 'assets', 'enableLongPaths.reg')}"`;
   } catch (error) {
     loading.error('Failed to enable Windows long path.');
     console.log(error);

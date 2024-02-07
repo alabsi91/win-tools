@@ -23,7 +23,7 @@ export default async function disableFirewall() {
   }
 
   try {
-    await cmdPassThrough`${scriptPath}${{ shell }}`;
+    await cmdPassThrough`& "${scriptPath}"${{ shell }}`;
     Log.success('\nDisabled Windows firewall, Windows Defender, and Windows Defender Cloud.');
   } catch (error) {
     Log.error('\nAn error occurred while running the command.');

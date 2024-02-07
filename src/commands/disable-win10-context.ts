@@ -10,7 +10,7 @@ export default async function disableWin10Context() {
   await sleep(1000);
 
   try {
-    await $`regedit.exe /s ${path.join(CONSTANTS.projectRoot, 'assets', 'disableWin10Context.reg')}`;
+    await $`regedit.exe /s "${path.join(CONSTANTS.projectRoot, 'assets', 'disableWin10Context.reg')}"`;
   } catch (error) {
     loading.error('Failed to disable Windows 10 context menu.');
     console.log(error);

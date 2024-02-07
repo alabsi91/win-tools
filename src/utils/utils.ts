@@ -26,7 +26,7 @@ export async function isPowerShellPolicySet() {
 export async function isChocoInstalled() {
   const chocoPath = path.join(process.env.ChocolateyInstall ?? '', 'choco.exe');
   try {
-    await $`${chocoPath} -v`;
+    await $`"${chocoPath}" -v`;
     return true;
   } catch (error) {
     return false;
@@ -52,7 +52,7 @@ export async function installChoco() {
 
 export async function getChocoInstalledPackages() {
   const chocoPath = path.join(process.env.ChocolateyInstall ?? '', 'choco.exe');
-  return await $`${chocoPath} list -r`;
+  return await $`"${chocoPath}" list -r`;
 }
 
 export async function installChocoPackage(packageName: string) {

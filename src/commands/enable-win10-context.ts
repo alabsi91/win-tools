@@ -10,7 +10,7 @@ export default async function enableWin10Context() {
   await sleep(1000);
 
   try {
-    await $`regedit.exe /s ${path.join(CONSTANTS.projectRoot, 'assets', 'enableWin10Context.reg')}`;
+    await $`regedit.exe /s "${path.join(CONSTANTS.projectRoot, 'assets', 'enableWin10Context.reg')}"`;
   } catch (error) {
     loading.error('Failed to enable Windows 10 context menu.');
     console.log(error);

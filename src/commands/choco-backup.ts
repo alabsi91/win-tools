@@ -1,6 +1,5 @@
 import confirm from '@inquirer/confirm';
 import input from '@inquirer/input';
-import Schema from '@schema';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
@@ -8,6 +7,7 @@ import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
 import { spinner } from '@cli/spinner.js';
+import Schema from '@schema';
 import { getChocoInstalledPackages, installChoco, isChocoInstalled } from '@utils/utils.js';
 
 export default async function chocoBackup(savePath?: string, overwrite?: boolean) {
