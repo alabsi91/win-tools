@@ -35,6 +35,21 @@ export default async function restoreFiles(txtFilePath: string | undefined, back
   loading.stop();
   Log.info(`Found "${chalk.yellow(pathsArr.length)}" paths in the text file.\n`);
 
+  // find path.basename duplicates in the paths
+  for (let i = 0; i < pathsArr.length; i++) {
+    const currentPath = pathsArr[i];
+    const currentBasename = path.basename(currentPath);
+
+    for (let j = i + 1; j < pathsArr.length; j++) {
+      const otherPath = pathsArr[j];
+      const otherBasename = path.basename(otherPath);
+      if (currentBasename === otherBasename) {
+        Log.error(`The path ${chalk.yellow(currentPath)} and ${chalk.yellow(otherPath)} have the same basename.\n`);
+        process.exit(1);
+      }
+    }
+  }
+
   const filesInBackupPath = (await readdir(backupPath)).map(e => path.join(backupPath!, e));
 
   for (let i = 0; i < pathsArr.length; i++) {

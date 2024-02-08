@@ -71,7 +71,7 @@ export async function installChocoPackage(packageName: string) {
     process.exit(1);
   }
 
-  await cmdPassThrough`${chocoPath} install ${packageName} -y ${{ shell }}`;
+  await cmdPassThrough`${chocoPath} install ${packageName} -yf ${{ shell }}`;
 }
 
 export async function setEnvVariable({ key, value }: { key: string; value: string }, scope: 'User' | 'Machine') {

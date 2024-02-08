@@ -44,7 +44,7 @@ console.log(
 
 // Here you can test your CLI arguments while using hot reload in development mode.
 if (CONSTANTS.isDev) {
-  testCliArgsInput('');
+  testCliArgsInput('backup-files --txt=t.txt --backup=F:\\CLI\\windows-tools-cli\\backup ');
 }
 
 async function main() {

@@ -1,7 +1,7 @@
 import input from '@inquirer/input';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
-import { readFile } from 'fs/promises';
+import { mkdir, readFile } from 'fs/promises';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
@@ -22,6 +22,10 @@ export default async function backupFiles(txtFilePath: string | undefined, backu
     process.exit(1);
   }
 
+  if (!existsSync(backupPath)) {
+    await mkdir(backupPath, { recursive: true });
+  }
+
   const pathsStr = await readFile(txtFilePath, { encoding: 'utf-8' });
   const pathsArr = pathsStr
     .split('\n')
@@ -30,6 +34,21 @@ export default async function backupFiles(txtFilePath: string | undefined, backu
 
   loading.stop();
   Log.info(`Found "${chalk.yellow(pathsArr.length)}" paths in the text file.\n`);
+
+  // find path.basename duplicates in the paths
+  for (let i = 0; i < pathsArr.length; i++) {
+    const currentPath = pathsArr[i];
+    const currentBasename = path.basename(currentPath);
+
+    for (let j = i + 1; j < pathsArr.length; j++) {
+      const otherPath = pathsArr[j];
+      const otherBasename = path.basename(otherPath);
+      if (currentBasename === otherBasename) {
+        Log.error(`The path ${chalk.yellow(currentPath)} and ${chalk.yellow(otherPath)} have the same basename.\n`);
+        process.exit(1);
+      }
+    }
+  }
 
   for (let i = 0; i < pathsArr.length; i++) {
     const pathStr = pathsArr[i].replace(/%.+%/g, match => {
