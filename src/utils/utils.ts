@@ -25,7 +25,7 @@ export async function isPowerShellPolicySet() {
 }
 
 export async function isChocoInstalled() {
-  const chocoPath = path.join(process.env.ChocolateyInstall ?? '', 'choco.exe');
+  const chocoPath = path.join(process.env.ChocolateyInstall ?? 'C:\\ProgramData\\chocolatey', 'choco.exe');
   try {
     await $`"${chocoPath}" -v`;
     return true;
@@ -87,7 +87,8 @@ export async function setEnvVariable({ key, value }: { key: string; value: strin
 
 export async function winRemovePackage(packageName: string) {
   const shell = await getPowerShell();
-  await cmdPassThrough`Get-AppxPackage "${packageName}" | Remove-AppxPackage ${{ shell }}`;
+  await cmdPassThrough`Get-AppxPackage -Name "${packageName}" -AllUsers | Remove-AppxPackage${{ shell }}`;
+  await cmdPassThrough`Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like "${packageName}" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -AllUsers -PackageName $_.PackageName }${{ shell }}`;
 }
 
 export async function recursiveCopy(source: string, target: string) {

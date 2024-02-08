@@ -11,18 +11,15 @@ import Schema from '@schema';
 
 // commands
 import autoLogon from '@commands/auto-logon.js';
-import chocoBackup from '@commands/choco-backup.js';
+import backupFiles from '@commands/backup-files.js';
 import chocoRestore from '@commands/choco-restore.js';
-import disableWin10Context from '@commands/disable-win10-context.js';
-import enableLongPath from '@commands/enable-long-path.js';
-import enableWin10Context from '@commands/enable-win10-context.js';
+import cleanStartMenu from '@commands/clean-start-menu.js';
+import disableFirewall from '@commands/disable-firewall.js';
+import restoreFiles from '@commands/restore-files.js';
 import runScripts from '@commands/run-scripts.js';
 import setEnvironmentVariables from '@commands/set-environment-variables.js';
+import setRegistry from '@commands/set-registry.js';
 import uninstallBloat from '@commands/uninstall-bloat.js';
-import disableAppSuggestions from '@commands/disable-app-suggestions.js';
-import disableFirewall from '@commands/disable-firewall.js';
-import backupFiles from '@commands/backup-files.js';
-import restoreFiles from '@commands/restore-files.js';
 
 const coolGradient = gradient([
   { color: '#FA8BFF', pos: 0 },
@@ -63,19 +60,16 @@ async function main() {
   });
 
   const results = Schema.parse(
-    chocoBackup.schema,
     chocoRestore.schema,
     backupFiles.schema,
     restoreFiles.schema,
-    enableWin10Context.schema,
-    disableWin10Context.schema,
-    enableLongPath.schema,
     setEnvironmentVariables.schema,
+    setRegistry.schema,
     autoLogon.schema,
     runScripts.schema,
     uninstallBloat.schema,
-    disableAppSuggestions.schema,
     disableFirewall.schema,
+    cleanStartMenu.schema,
     options,
   );
 
@@ -120,18 +114,6 @@ async function main() {
     return;
   }
 
-  if (command === 'choco-backup') {
-    const { path, overwrite, help } = results.data;
-
-    if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['choco-backup'], includeGlobalOptions: false });
-      return;
-    }
-
-    await chocoBackup(path, overwrite);
-    return;
-  }
-
   if (command === 'choco-restore') {
     const { path, help } = results.data;
 
@@ -168,42 +150,6 @@ async function main() {
     return;
   }
 
-  if (command === 'enable-old-menu') {
-    const { help } = results.data;
-
-    if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['enable-old-menu'], includeGlobalOptions: false });
-      return;
-    }
-
-    await enableWin10Context();
-    return;
-  }
-
-  if (command === 'disable-old-menu') {
-    const { help } = results.data;
-
-    if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['disable-old-menu'], includeGlobalOptions: false });
-      return;
-    }
-
-    await disableWin10Context();
-    return;
-  }
-
-  if (command === 'enable-long-path') {
-    const { help } = results.data;
-
-    if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['enable-long-path'], includeGlobalOptions: false });
-      return;
-    }
-
-    await enableLongPath();
-    return;
-  }
-
   if (command === 'set-env') {
     const { path, machine, help } = results.data;
 
@@ -213,6 +159,18 @@ async function main() {
     }
 
     await setEnvironmentVariables(path, machine);
+    return;
+  }
+
+  if (command === 'set-reg') {
+    const { help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['set-reg'], includeGlobalOptions: false });
+      return;
+    }
+
+    await setRegistry();
     return;
   }
 
@@ -252,18 +210,6 @@ async function main() {
     return;
   }
 
-  if (command === 'disable-suggestions') {
-    const { help } = results.data;
-
-    if (help) {
-      Schema.printHelp<typeof results>({ includeCommands: ['disable-suggestions'], includeGlobalOptions: false });
-      return;
-    }
-
-    await disableAppSuggestions();
-    return;
-  }
-
   if (command === 'disable-firewall') {
     const { help } = results.data;
 
@@ -273,6 +219,18 @@ async function main() {
     }
 
     await disableFirewall();
+    return;
+  }
+
+  if (command === 'clean-start-menu') {
+    const { help } = results.data;
+
+    if (help) {
+      Schema.printHelp<typeof results>({ includeCommands: ['clean-start-menu'], includeGlobalOptions: false });
+      return;
+    }
+
+    await cleanStartMenu();
   }
 }
 

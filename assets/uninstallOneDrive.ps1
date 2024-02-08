@@ -1,19 +1,47 @@
-Stop-Process -Name OneDrive -ErrorAction SilentlyContinue
-Start-Sleep -s 3
-$onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
-If (!(Test-Path $onedrive)) {
-	$onedrive = "$env:SYSTEMROOT\System32\OneDriveSetup.exe"
+Set-StrictMode -Version Latest
+$ProgressPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
+trap {
+	Write-Host
+	Write-Host "ERROR: $_"
+    ($_.ScriptStackTrace -split '\r?\n') -replace '^(.*)$', 'ERROR: $1' | Write-Host
+    ($_.Exception.ToString() -split '\r?\n') -replace '^(.*)$', 'ERROR EXCEPTION: $1' | Write-Host
+	Write-Host
+	Write-Host 'Sleeping for 60m to give you time to look around the virtual machine before self-destruction...'
+	Start-Sleep -Seconds (60 * 60)
+	Exit 1
 }
-Start-Process $onedrive "/uninstall" -NoNewWindow -Wait
-Start-Sleep -s 3
-Stop-Process -Name explorer -ErrorAction SilentlyContinue
-Start-Sleep -s 3
-Remove-Item -Path "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-Remove-Item -Path "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-Remove-Item -Path "$env:SYSTEMDRIVE\OneDriveTemp" -Force -Recurse -ErrorAction SilentlyContinue
-If (!(Test-Path "HKCR:")) {
-	New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
+
+$oneDriveSetup = 'C:\Windows\SysWOW64\OneDriveSetup.exe'
+
+# bail when OneDrive is not installed.
+if (!(Test-Path $oneDriveSetup)) {
+	Exit 0
 }
-Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
+
+# disable OneDrive.
+New-Item `
+	-Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' `
+	-Name OneDrive `
+	-Force `
+| Out-Null
+New-ItemProperty `
+	-Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive' `
+	-Name DisableFileSyncNGSC `
+	-Value 1 `
+	-Force `
+| Out-Null
+
+# uninstall OneDrive.
+# NB one drive setup will still be WinSxS and it does not seem possible to
+#    remove with Remove-WindowsPackage.
+Get-Process OneDrive -ErrorAction SilentlyContinue | Stop-Process -Force
+&$oneDriveSetup /uninstall | Out-String -Stream
+
+# ignore uninstall error.
+# NB because it fails in windows 20H2, and not having OneDrive is just a
+#    nice to have.
+if ($LASTEXITCODE) {
+	Write-Output "WARN Failed to uninstall OneDrive with exit code $LASTEXITCODE."
+	Exit 0
+}

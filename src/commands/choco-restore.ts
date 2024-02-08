@@ -6,16 +6,15 @@ import { readFile } from 'fs/promises';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
-import { spinner } from '@cli/spinner.js';
 import Schema from '@schema';
 import { installChoco, installChocoPackage, isChocoInstalled } from '@utils/utils.js';
 
 export default async function chocoRestore(filePath: string | undefined) {
-  const loading = spinner('Checking if choco is installed...');
+  Log.info('Checking if choco is installed...\n');
 
   const isChoco = await isChocoInstalled();
   if (!isChoco) {
-    loading.error('Choco is not installed. Please install it first.');
+    Log.error('Choco is not installed. Please install it first.\n');
 
     const confirmInstall = await confirm({ message: 'Do you want to install choco ?' });
     if (!confirmInstall) return;
@@ -25,11 +24,11 @@ export default async function chocoRestore(filePath: string | undefined) {
 
   filePath = filePath ?? (await input({ message: 'Enter the path of the backup text file: ' }));
 
-  loading.start('Reading backup text file...');
+  Log.info('Reading backup text file...\n');
 
   // check if backup text file exits
   if (!existsSync(filePath)) {
-    loading.error('Backup text file does not exist.');
+    Log.error('Backup text file does not exist.\n');
     process.exit(1);
   }
 
@@ -39,7 +38,6 @@ export default async function chocoRestore(filePath: string | undefined) {
     .filter(e => e.trim() && !e.trim().startsWith('#'))
     .map(e => e.trim());
 
-  loading.stop();
   Log.info(`Found "${chalk.yellow(packagesArr.length)}" packages in the backup text file.`);
 
   for (let i = 0; i < packagesArr.length; i++) {

@@ -10,7 +10,7 @@ import { cmdPassThrough } from '@cli/terminal.js';
 import Schema from '@schema';
 import { getPowerShell } from '@utils/utils.js';
 
-export default async function runScripts(filePath?: string, exitOnError = true) {
+export default async function runScripts(filePath?: string, exitOnError = false) {
   filePath = filePath ?? (await input({ message: 'Enter the path of the scripts text file: ' }));
 
   const loading = spinner('Reading the text file...');
@@ -74,7 +74,7 @@ runScripts.schema = Schema.createCommand({
     {
       name: 'exitOnError',
       type: z.boolean().optional(),
-      description: 'Exit the process if an error occurs.',
+      description: 'Exit the process if an error occurs. Default is false.',
       aliases: ['e', 'exit'],
     },
     {
