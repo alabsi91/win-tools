@@ -1,13 +1,25 @@
+import confirm from '@inquirer/confirm';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
+import { CONSTANTS, cmdPassThrough } from '@cli/terminal.js';
 import checkbox from '@inquirer/checkbox';
 import Schema from '@schema';
-import { getPowerShell, winRemovePackage } from '@utils/utils.js';
+import { getPowerShell, isPowerShellAdmin, winRemovePackage } from '@utils/utils.js';
 import path from 'path';
-import { CONSTANTS, cmdPassThrough } from '@cli/terminal.js';
 
 export default async function uninstallBloat() {
+  const isAdmin = await isPowerShellAdmin();
+
+  // permission denied
+  if (!isAdmin) {
+    Log.error('\nPermission denied.\n');
+    Log.info('Please run in an elevated PowerShell session first.');
+    process.exit(1);
+  }
+
+  const shell = await getPowerShell();
+
   const selected = await checkbox({
     message: 'Which package do you want to uninstall?',
     choices: packages.map(p => ({ name: p, value: p })),
@@ -19,9 +31,20 @@ export default async function uninstallBloat() {
     const packageName = selected[i];
     Log.info(`\nUninstalling ${packageName}...`);
 
-    // for OneDrive
+    // uninstall Microsoft Edge
+    if (packageName === 'Microsoft.Edge') {
+      Log.warn('\nUninstalling Microsoft Edge will uninstall the browser and keep the web view.');
+      Log.warn('Some Microsoft apps like copilot will not work.');
+
+      const answer = await confirm({ message: 'Are you sure you want to uninstall Microsoft Edge?' });
+      if (!answer) continue;
+
+      const removerPath = path.join(CONSTANTS.projectRoot, 'assets', 'RemoveEdgeOnly.exe');
+      await cmdPassThrough`& "${removerPath}" /e${{ shell }}`;
+    }
+
+    // uninstall OneDrive
     if (packageName === 'Microsoft.OneDrive') {
-      const shell = await getPowerShell();
       const scriptPath = path.join(CONSTANTS.projectRoot, 'assets', 'uninstallOneDrive.ps1');
 
       try {
@@ -57,6 +80,7 @@ uninstallBloat.schema = Schema.createCommand({
 });
 
 const packages = [
+  'Microsoft.Edge',
   'Microsoft.OneDrive',
   'Clipchamp.Clipchamp',
   'Microsoft.3DBuilder',

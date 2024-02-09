@@ -5,7 +5,6 @@ import { readFile, readdir } from 'fs/promises';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
-import { spinner } from '@cli/spinner.js';
 import Schema from '@schema';
 import { recursiveCopy } from '@utils/utils.js';
 import path from 'path';
@@ -14,25 +13,27 @@ export default async function restoreFiles(txtFilePath: string | undefined, back
   txtFilePath = txtFilePath ?? (await input({ message: 'Enter the path of the text file: ' }));
   backupPath = backupPath ?? (await input({ message: 'Enter the path to save the backup files: ' }));
 
-  const loading = spinner('Reading the text file...');
+  Log.info('Reading the text file...\n');
 
+  // check if the text file exits
   if (!existsSync(txtFilePath)) {
-    loading.error('\nThe text file does not exist.');
+    Log.error('The text file does not exist.\n');
     process.exit(1);
   }
 
+  // create the backup folder if exist
   if (!existsSync(backupPath)) {
-    loading.error('\nThe backup path does not exist.');
+    Log.error('The backup path does not exist.\n');
     process.exit(1);
   }
 
+  // get the paths from the text file
   const pathsStr = await readFile(txtFilePath, { encoding: 'utf-8' });
   const pathsArr = pathsStr
     .split('\n')
     .filter(e => e.trim() && !e.trim().startsWith('#'))
     .map(e => e.trim());
 
-  loading.stop();
   Log.info(`Found "${chalk.yellow(pathsArr.length)}" paths in the text file.\n`);
 
   // find path.basename duplicates in the paths
@@ -53,6 +54,7 @@ export default async function restoreFiles(txtFilePath: string | undefined, back
   const filesInBackupPath = (await readdir(backupPath)).map(e => path.join(backupPath!, e));
 
   for (let i = 0; i < pathsArr.length; i++) {
+    // replace the environment variables
     const pathStr = pathsArr[i].replace(/%.+%/g, match => {
       const env = process.env[match.replace(/%/g, '')];
       if (!env) return match;

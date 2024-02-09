@@ -10,6 +10,7 @@ export default async function setRegistry() {
   const selected = await checkbox({
     message: 'Which regex do you want to set?',
     choices: regList,
+    pageSize: regList.length,
   });
 
   console.log('');
@@ -31,7 +32,7 @@ export default async function setRegistry() {
 setRegistry.schema = Schema.createCommand({
   command: 'set-reg',
   description: 'Set registry to enable or disable features.',
-  aliases: ['set-registry', 'set-registryts'],
+  aliases: ['set-registry', 'setreg'],
   options: [
     {
       name: 'help',
@@ -43,8 +44,8 @@ setRegistry.schema = Schema.createCommand({
 });
 
 const regList = [
-  { name: 'Enable Windows 10 context menu', value: 'EnableWin10Context.reg' },
-  { name: 'Disable Windows 10 context menu', value: 'DisableWin10Context.reg' },
+  { name: 'Enable old Windows 10 context menu', value: 'EnableWin10Context.reg' },
+  { name: 'Disable old Windows 10 context menu', value: 'DisableWin10Context.reg' },
 
   { name: 'Disable Copilot', value: 'DisableCopilot.reg' },
   { name: 'Enable Copilot', value: 'EnableCopilot.reg' },

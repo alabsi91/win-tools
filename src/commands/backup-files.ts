@@ -5,7 +5,6 @@ import { mkdir, readFile } from 'fs/promises';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
-import { spinner } from '@cli/spinner.js';
 import Schema from '@schema';
 import { recursiveCopy } from '@utils/utils.js';
 import path from 'path';
@@ -14,25 +13,26 @@ export default async function backupFiles(txtFilePath: string | undefined, backu
   txtFilePath = txtFilePath ?? (await input({ message: 'Enter the path of the text file: ' }));
   backupPath = backupPath ?? (await input({ message: 'Enter the path to save the backup files: ' }));
 
-  const loading = spinner('Reading the text file...');
+  Log.info('\nReading the text file...\n');
 
   // check if the text file exits
   if (!existsSync(txtFilePath)) {
-    loading.error('\nThe text file does not exist.');
+    Log.error('The text file does not exist.\n');
     process.exit(1);
   }
 
+  // create the backup folder if it doesn't exist
   if (!existsSync(backupPath)) {
     await mkdir(backupPath, { recursive: true });
   }
 
+  // get the paths from the text file
   const pathsStr = await readFile(txtFilePath, { encoding: 'utf-8' });
   const pathsArr = pathsStr
     .split('\n')
     .filter(e => e.trim() && !e.trim().startsWith('#'))
     .map(e => e.trim());
 
-  loading.stop();
   Log.info(`Found "${chalk.yellow(pathsArr.length)}" paths in the text file.\n`);
 
   // find path.basename duplicates in the paths
@@ -51,6 +51,7 @@ export default async function backupFiles(txtFilePath: string | undefined, backu
   }
 
   for (let i = 0; i < pathsArr.length; i++) {
+    // replace the environment variables
     const pathStr = pathsArr[i].replace(/%.+%/g, match => {
       const env = process.env[match.replace(/%/g, '')];
       if (!env) return match;
@@ -69,7 +70,7 @@ export default async function backupFiles(txtFilePath: string | undefined, backu
 
 backupFiles.schema = Schema.createCommand({
   command: 'backup-files',
-  description: 'Backup files from a text file.',
+  description: 'Backup files from a text file that contains a list of paths to a specified folder.',
   aliases: ['backup-folders', 'backup-paths'],
   options: [
     {

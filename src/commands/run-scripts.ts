@@ -5,7 +5,6 @@ import { readFile } from 'fs/promises';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
-import { spinner } from '@cli/spinner.js';
 import { cmdPassThrough } from '@cli/terminal.js';
 import Schema from '@schema';
 import { getPowerShell } from '@utils/utils.js';
@@ -13,11 +12,11 @@ import { getPowerShell } from '@utils/utils.js';
 export default async function runScripts(filePath?: string, exitOnError = false) {
   filePath = filePath ?? (await input({ message: 'Enter the path of the scripts text file: ' }));
 
-  const loading = spinner('Reading the text file...');
+  Log.info('Reading the text file...\n');
 
   // check if the text file exits
   if (!existsSync(filePath)) {
-    loading.error('\nThe text file does not exist.');
+    Log.error('The text file does not exist.\n');
     process.exit(1);
   }
 
@@ -27,7 +26,6 @@ export default async function runScripts(filePath?: string, exitOnError = false)
     .filter(e => e.trim() && !e.trim().startsWith('#'))
     .map(e => e.trim());
 
-  loading.stop();
   Log.info(`Found "${chalk.yellow(scriptsArr.length)}" scripts in the text file.`);
 
   for (let i = 0; i < scriptsArr.length; i++) {

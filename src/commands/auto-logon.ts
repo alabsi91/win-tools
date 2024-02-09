@@ -21,7 +21,7 @@ export default async function autoLogon({ username, domain, autoLogonCount, remo
   if (!hasPermissions) {
     Log.error('\nPowerShell execution policy is not set, permission denied.\n');
     Log.info(
-      'Please run the following command in an evaluated PowerShell session first:',
+      'Please run the following command in an elevated PowerShell session first:',
       c.green('\n"') + c.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + c.green('"\n'),
     );
     process.exit(1);

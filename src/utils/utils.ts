@@ -42,7 +42,7 @@ export async function installChoco() {
   if (!isPolicySet) {
     Log.error('\nPowerShell execution policy is not set, permission denied.\n');
     Log.info(
-      'Please run the following command in an evaluated PowerShell session first:',
+      'Please run the following command in an elevated PowerShell session first:',
       chalk.green('\n"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
     );
     process.exit(1);
@@ -51,23 +51,23 @@ export async function installChoco() {
   await cmdPassThrough`Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) ${{ shell }}`;
 }
 
-export async function getChocoInstalledPackages() {
-  const chocoPath = path.join(process.env.ChocolateyInstall ?? '', 'choco.exe');
-  return await $`"${chocoPath}" list -r`;
+export async function isPowerShellAdmin() {
+  const shell = await getPowerShell();
+  const output =
+    await $`(New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)${{ shell }}`;
+  if (output !== 'True') return false;
+  return true;
 }
 
 export async function installChocoPackage(packageName: string) {
-  const chocoPath = path.join(process.env.ChocolateyInstall ?? '', 'choco.exe');
+  const chocoPath = path.join(process.env.ChocolateyInstall ?? 'C:\\ProgramData\\chocolatey', 'choco.exe');
   const shell = await getPowerShell();
-  const isPolicySet = await isPowerShellPolicySet();
+  const isAdmin = await isPowerShellAdmin();
 
   // permission denied
-  if (!isPolicySet) {
-    Log.error('\nPowerShell execution policy is not set, permission denied.\n');
-    Log.info(
-      'Please run the following command in an evaluated PowerShell session first:',
-      chalk.green('\n"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
-    );
+  if (!isAdmin) {
+    Log.error('\nPermission denied.\n');
+    Log.info('Please run in an elevated PowerShell session first.');
     process.exit(1);
   }
 

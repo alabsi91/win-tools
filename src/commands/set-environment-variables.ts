@@ -5,17 +5,16 @@ import { readFile } from 'fs/promises';
 import { z } from 'zod';
 
 import { Log } from '@cli/logger.js';
-import { spinner } from '@cli/spinner.js';
 import Schema from '@schema';
 import { setEnvVariable } from '@utils/utils.js';
 
 export default async function setEnvironmentVariables(filePath: string | undefined, isScopeMachine: boolean = false) {
   filePath = filePath ?? (await input({ message: 'Enter the path of the environment variables text file :' }));
 
-  const loading = spinner('Reading text file...');
+  Log.info('Reading text file...\n');
 
   if (!existsSync(filePath)) {
-    loading.error('Backup text file does not exist.');
+    Log.error('Backup text file does not exist.\n');
     return;
   }
 
@@ -31,7 +30,6 @@ export default async function setEnvironmentVariables(filePath: string | undefin
       return { key: 'PATH', value: e.trim() };
     });
 
-  loading.stop();
   Log.info(`Found "${chalk.yellow(variables.length)}" environment variables.\n`);
 
   for (let i = 0; i < variables.length; i++) {

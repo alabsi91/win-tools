@@ -20,7 +20,8 @@ export default async function cleanStartMenu() {
     process.exit(1);
   }
 
-  Log.success('\nCleaned start menu.');
+  Log.success('\nCleaned start menu.\n');
+  Log.warn('Restart your computer to see the changes.\n');
 }
 
 cleanStartMenu.schema = Schema.createCommand({

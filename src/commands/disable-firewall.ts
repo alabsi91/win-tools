@@ -16,7 +16,7 @@ export default async function disableFirewall() {
   if (!isPolicySet) {
     Log.error('\nPowerShell execution policy is not set, permission denied.\n');
     Log.info(
-      'Please run the following command in an evaluated PowerShell session first:',
+      'Please run the following command in an elevated PowerShell session first:',
       chalk.green('\n"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
     );
     process.exit(1);

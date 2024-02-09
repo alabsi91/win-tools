@@ -30,7 +30,7 @@ Log.error = (...messages: string[]) => {
 
 Log.info = (...messages: string[]) => {
   const { newlines, afterNewline } = getNewlines(messages);
-  console.log(newlines + formatLogTitle('INFO', 'blue'), chalk.cyan(afterNewline));
+  console.log(newlines + formatLogTitle('INFO', 'cyan'), chalk.cyan(afterNewline));
 };
 
 function formatLogTitle(title: string, color: ColorName) {

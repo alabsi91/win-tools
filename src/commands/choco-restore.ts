@@ -43,7 +43,11 @@ export default async function chocoRestore(filePath: string | undefined) {
   for (let i = 0; i < packagesArr.length; i++) {
     const packageName = packagesArr[i];
     Log.info('\nInstalling package:', chalk.yellow(packageName), '\n');
-    await installChocoPackage(packageName);
+    try {
+      await installChocoPackage(packageName);
+    } catch (error) {
+      continue;
+    }
   }
 }
 
