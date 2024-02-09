@@ -5,16 +5,27 @@ import { Log } from '@cli/logger.js';
 import { CONSTANTS, cmdPassThrough } from '@cli/terminal.js';
 import checkbox from '@inquirer/checkbox';
 import Schema from '@schema';
-import { getPowerShell, isPowerShellAdmin, winRemovePackage } from '@utils/utils.js';
+import { getPowerShell, isPowerShellAdmin, isPowerShellPolicySet, winRemovePackage } from '@utils/utils.js';
 import path from 'path';
+import chalk from 'chalk';
 
 export default async function uninstallBloat() {
   const isAdmin = await isPowerShellAdmin();
+  const hasPermissions = await isPowerShellPolicySet();
 
   // permission denied
   if (!isAdmin) {
     Log.error('\nPermission denied.\n');
     Log.info('Please run in an elevated PowerShell session first.');
+    process.exit(1);
+  }
+
+  if (!hasPermissions) {
+    Log.error('\nPowerShell execution policy is not set, permission denied.\n');
+    Log.info(
+      'Please run the following command in an elevated PowerShell session first:',
+      chalk.green('\n"') + chalk.yellow('Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force') + chalk.green('"\n'),
+    );
     process.exit(1);
   }
 
@@ -34,7 +45,7 @@ export default async function uninstallBloat() {
     // uninstall Microsoft Edge
     if (packageName === 'Microsoft.Edge') {
       Log.warn('\nUninstalling Microsoft Edge will uninstall the browser and keep the web view.');
-      Log.warn('Some Microsoft apps like copilot will not work.');
+      Log.warn('Some Microsoft apps like copilot will not work and web search in taskbar search will not work.');
 
       const answer = await confirm({ message: 'Are you sure you want to uninstall Microsoft Edge?' });
       if (!answer) continue;

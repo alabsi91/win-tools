@@ -14,14 +14,13 @@ export default async function cleanStartMenu() {
 
   try {
     const shell = await getPowerShell();
-    await $`Copy-Item -Path "${menuTemplatePath}" -Destination "${targetPath}" -Force${{ shell }}`;
+    await $`Copy-Item -Path "${menuTemplatePath}" -Destination "${targetPath}" -Force; stop-process -name explorer –force${{ shell }}`;
   } catch (error) {
     Log.error(`\nFailed to copy ${menuTemplatePath} to ${targetPath}.\n`);
     process.exit(1);
   }
 
   Log.success('\nCleaned start menu.\n');
-  Log.warn('Restart your computer to see the changes.\n');
 }
 
 cleanStartMenu.schema = Schema.createCommand({
