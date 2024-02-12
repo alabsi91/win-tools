@@ -22,7 +22,8 @@ export default async function runScripts(filePath?: string, exitOnError = false)
 
   const scriptsStr = await readFile(filePath, { encoding: 'utf-8' });
   const scriptsArr = scriptsStr
-    .split('\n')
+    .replace(/;\s*(\r\n|\n|\r)/g, '; ') // make a multiline script that ends with ";" one line
+    .split(/\r\n|\n|\r/)
     .filter(e => e.trim() && !e.trim().startsWith('#'))
     .map(e => e.trim());
 
